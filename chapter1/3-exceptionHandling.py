@@ -1,17 +1,19 @@
-from urllib.request import urlopen
-from urllib.error import HTTPError
+import requests
 from bs4 import BeautifulSoup
 import sys
 
 
 def getTitle(url):
     try:
-        html = urlopen(url)
-    except HTTPError as e:
+        html = requests.get(url)
+    except requests.exceptions.ConnectionError as e:
         print(e)
         return None
+    except requests.exceptions.HTTPError as e:
+        print("Invalid HTTP response!")
+        return None
     try:
-        bsObj = BeautifulSoup(html.read())
+        bsObj = BeautifulSoup(html.content, "html.parser")
         title = bsObj.body.h1
     except AttributeError as e:
         return None
